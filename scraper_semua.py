@@ -667,9 +667,9 @@ def scrape_arahpantura(keyword: str, max_articles: int, session: requests.Sessio
     page = 1
     while scraped < max_articles:
         if page == 1:
-            url = f"https://arahpantura.id/?s={keyword}"
+            url = f"https://arahpantura.id/?s={keyword}+"
         else:
-            url = f"https://arahpantura.id/page/{page}/?s={keyword}"
+            url = f"https://arahpantura.id/page/{page}/?s={keyword}+"
         print(f"[ArahPantura] GET {url}")
         resp = session.get(url, timeout=10)
         resp.raise_for_status()
