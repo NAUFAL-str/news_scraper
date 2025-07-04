@@ -185,6 +185,7 @@ def download(task_id, fmt):
 
 # ── RUN ──────────────────────────────────────────────────────────
 if __name__ == "__main__":
+    import os
     # Railway (dan Nixpacks) mengekspor PORT
     port = int(os.environ.get("PORT", 5000))
     # Dengarkan di semua interface, pada port yang benar
