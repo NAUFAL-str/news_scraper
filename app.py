@@ -185,5 +185,7 @@ def download(task_id, fmt):
 
 # ── RUN ──────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    # No reloader agar thread tidak reset
-    app.run(debug=True, use_reloader=False)
+    # Railway (dan Nixpacks) mengekspor PORT
+    port = int(os.environ.get("PORT", 5000))
+    # Dengarkan di semua interface, pada port yang benar
+    app.run(host="0.0.0.0", port=port)
