@@ -172,7 +172,7 @@ def scrape_kompas(keyword: str, max_articles: int, session: requests.Session):
             results.append({'site':'kompas','tanggal':tanggal,'title':title,'content':content,'link':link})
             scraped += 1
             print(f"   ✅ [Kompas {scraped}] {title[:50]}…")
-            time.sleep(1)
+            time.sleep(0.5)
 
         page += 1
     return results
@@ -200,7 +200,7 @@ def scrape_beritasatu(keyword: str, max_articles: int, session: requests.Session
             paras=asp.select_one("div.col.b1-article.body-content") or asp.select_one("article.main")
             content=" ".join(p.get_text(strip=True) for p in paras.find_all("p"))
             results.append({'site':'beritasatu','tanggal':tanggal,'title':judul,'content':content,'link':link})
-            scraped+=1; print(f"   ✅ [BeritaSatu {scraped}] {judul[:50]}…"); time.sleep(1)
+            scraped+=1; print(f"   ✅ [BeritaSatu {scraped}] {judul[:50]}…"); time.sleep(0.5)
         page+=1
     return results
     
@@ -280,7 +280,7 @@ def scrape_panturapost(keyword: str, max_articles: int, session: requests.Sessio
             print(f"   ✅ [PanturaPost {count}] {title[:40]}…")
 
         page += 1
-        time.sleep(1)
+        time.sleep(0.5)
 
     return results
 
@@ -322,7 +322,7 @@ def scrape_inews(keyword:str, max_articles:int, session: requests.Session):
                                           if not p.get_text(strip=True).startswith("Editor:"))
             content=" ".join(content_parts)
             results.append({'site':'inews','tanggal':tanggal,'title':title,'content':content,'link':link})
-            scraped+=1; print(f"   ✅ [iNews {scraped}] {title[:50]}…"); time.sleep(1)
+            scraped+=1; print(f"   ✅ [iNews {scraped}] {title[:50]}…"); time.sleep(0.5)
         page+=1
     return results
 
@@ -362,7 +362,7 @@ def scrape_antaranews(keyword:str, max_articles:int, session: requests.Session):
                 content=""
             results.append({'site':'antara','tanggal':tanggal,'title':title,'content':content,'link':link})
             scraped+=1; print(f"   ✅ [Antara {scraped}] {title[:60]}…")
-        page+=1; time.sleep(1)
+        page+=1; time.sleep(0.5))
     return results
 
 # TVONENEWS scraper
@@ -407,7 +407,7 @@ def scrape_tvonenews(keyword: str, max_articles: int, session: requests.Session)
                 print(f"[TVOne] detail failed: {e}")
             results.append({'site':'tvone','tanggal':tanggal,'title':title,'content':content,'link':link})
             scraped+=1; print(f"   ✅ [Antara {scraped}] {title[:60]}…")
-        page+=1; time.sleep(1)
+        page+=1; time.sleep(0.5))
     return results
 
 # Scrape IndonesianPoliceNews (new)
@@ -484,7 +484,7 @@ def scrape_police(keyword: str, max_articles: int, session: requests.Session):
                 print(f"[Police] detail failed: {e}")
             results.append({'site':'police','tanggal':tanggal,'title':title,'content':content,'link':link})
             scraped+=1; print(f"   ✅ [PoliceNews {scraped}] {title[:60]}…")
-        page+=1; time.sleep(1)
+        page+=1; time.sleep(0.5))
     return results
 
 # SuaraJelata scraper
@@ -556,7 +556,7 @@ def scrape_suarajelata(keyword: str, max_articles: int, session: requests.Sessio
                 'link': link
             })
             scraped += 1; print(f"   ✅ [SuaraJelata {scraped}] {title[:40]}…")
-        paged += 1; time.sleep(1)
+        paged += 1; time.sleep(0.5))
     return results
 
 # EmsatuNews scraper
@@ -652,7 +652,7 @@ def scrape_emsatunews(keyword: str, max_articles: int, session: requests.Session
                 'link': link
             })
             scraped += 1;print(f"   ✅ [EmsatuNews {scraped}] {title[:50]}…")
-        page += 1;time.sleep(1)
+        page += 1;time.sleep(0.5))
     return results
 
 # ArahPantura scraper
@@ -719,7 +719,7 @@ def scrape_arahpantura(keyword: str, max_articles: int, session: requests.Sessio
                 'link': link
             })
             scraped += 1;print(f"   ✅ [ArahPantura {scraped}] {title[:60]}…")
-        page += 1;time.sleep(1)
+        page += 1;time.sleep(0.5))
     return results
 
 # WP-REST API scraper
