@@ -27,8 +27,8 @@ from scraper_semua import (
     scrape_emsatunews, scrape_arahpantura,
     scrape_wp_rest, scrape_rss_search
 )
-from summarizer import summarize
-from classifier import classify
+from groq_utils import summarize
+from groq_utils import classify
 
 # daftar scraper agar mudah di-loop
 SITE_SCRAPERS = [
