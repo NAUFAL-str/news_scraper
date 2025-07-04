@@ -48,7 +48,7 @@ def _retry_groq(prompt: str, max_retry: int = 3):
                 time.sleep(wait)
             else:
                 print(f"[Groq] Err cls ({attempt}/{max_retry}): {e}")
-                time.sleep(3)
+                time.sleep(0.5)
     return None
 
 def classify(text: str) -> str:
