@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Proses Ringkasan</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style> td{vertical-align:top;font-size:.9rem} </style>
+</head>
+<body class="p-4">
+
+<h4>Memproses… <span id="stat">0/?</span></h4>
+
+<div class="progress mb-3" style="height:22px;">
+  <div id="bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%">0%</div>
+</div>
+
+<!-- download + kembali -->
+<div id="after" class="d-none mb-4">
+  <a id="dl-csv"  class="btn btn-outline-primary btn-sm me-2" href="#">Download CSV</a>
+  <a id="dl-xlsx" class="btn btn-outline-success btn-sm me-4" href="#">Download Excel</a>
+  <a id="btn-back" href="/" class="btn btn-success btn-sm">Scrape lagi</a>
+</div>
+
+<table class="table table-bordered" id="tbl">
+  <thead class="table-light">
+    <tr><th>Site</th><th>Tanggal</th><th>Judul</th><th>Ringkasan</th><th>Kategori</th><th>Link</th></tr>
+  </thead><tbody></tbody>
+</table>
+
+<script>
+const taskId   = "{{ task_id }}";
+let rendered    = 0;
+
+function poll(){
+ fetch(`/status/${taskId}`)
+ .then(r=>r.json())
+ .then(js=>{
+    const total = js.total || 0;
+    const done  = js.done  || 0;
+    document.getElementById('stat').innerText = `${done}/${total||"?"}`;
+
+    const pct = total? Math.floor(done/total*100):0;
+    const bar = document.getElementById('bar');
+    bar.style.width  = pct + "%";
+    bar.innerText    = pct + "%";
+
+    const tbody = document.querySelector('#tbl tbody');
+    while(rendered < js.rows.length){
+       const b = js.rows[rendered];
+       const tr = document.createElement('tr');
+       tr.innerHTML =
+         `<td>${b.site}</td><td>${b.tanggal}</td>
+          <td style="min-width:200px">${b.title}</td>
+          <td style="min-width:260px">${b.summary}</td>
+          <td>${b.kategori}</td>
+          <td><a href="${b.link}" target="_blank">link</a></td>`;
+       tbody.appendChild(tr);
+       rendered++;
+    }
+
+    if(js.finished){
+        bar.classList.remove('progress-bar-animated');
+        const after = document.getElementById('after');
+        document.getElementById('dl-csv').href  = `/download/${taskId}/csv`;
+        document.getElementById('dl-xlsx').href = `/download/${taskId}/xlsx`;
+        after.classList.remove('d-none');
+        if(js.error){ alert("Selesai dengan error: " + js.error); }
+    } else {
+        setTimeout(poll, 2000);
+    }
+ })
+ .catch(()=> setTimeout(poll, 3000));
+}
+poll();
+</script>
+</body>
+</html>

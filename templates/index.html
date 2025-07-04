@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>WEB 2 – Scrape & Ringkas Berita</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+  <h2 class="mb-4">Scrape Berita Ekonomi Jateng/Brebes</h2>
+
+  <form method="post" class="row gy-2 gx-3 align-items-center mb-5">
+    <div class="col-sm-5">
+      <input name="keyword" class="form-control" placeholder="Keyword (mis: rumah brebes)" required>
+    </div>
+    <div class="col-sm-3">
+      <input name="max_articles" type="number" min="1" max="50" value="20"
+             class="form-control" placeholder="Max artikel / situs">
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-primary">Cari</button>
+    </div>
+  </form>
+
+  {% if berita_list %}
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped small">
+      <thead class="table-light">
+        <tr>
+          <th>Site</th><th>Tanggal</th><th>Judul</th><th>Ringkasan</th><th>Kategori</th><th>Link</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in berita_list %}
+        <tr>
+          <td>{{ b.site }}</td>
+          <td>{{ b.tanggal }}</td>
+          <td style="min-width:200px">{{ b.title }}</td>
+          <td style="min-width:260px">{{ b.summary }}</td>
+          <td>{{ b.kategori }}</td>
+          <td><a href="{{ b.link }}" target="_blank">baca</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</body>
+</html>
