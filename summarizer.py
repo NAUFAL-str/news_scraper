@@ -26,7 +26,7 @@ def _retry_groq(prompt: str, max_retry: int = 3) -> Optional[str]:
                 time.sleep(wait_time)
             else:
                 print(f"[Groq] Error ({attempt}/{max_retry}): {e}")
-                time.sleep(1)
+                time.sleep(3)
     return None
 
 # ──────────────────────────────────────────────────────────────────
