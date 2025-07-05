@@ -848,7 +848,7 @@ def scrape_rss_search(keyword: str, max_articles: int, session: requests.Session
 
 # ─────────────────── fungsi reusable utk Flask ───────────────────
 def scrape_all(keyword: str,
-               max_articles: int = 20,
+               max_articles: int = 999,
                session: requests.Session | None = None) -> list[dict]:
     """Jalankan seluruh scraper dan kembalikan list dict artikel."""
     session = session or create_session()
@@ -880,7 +880,7 @@ if __name__ == '__main__':
         help='Search keyword for all sites'
     )
     parser.add_argument(
-        '--max-articles', type=int, default=20,
+        '--max-articles', type=int, default=999,
         help='Max number of articles to scrape per site'
     )
     parser.add_argument(
