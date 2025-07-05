@@ -101,7 +101,7 @@ def master_worker(task_id: str, keyword: str, max_articles: int):
 def index():
     if request.method == "POST":
         kw = request.form.get("keyword", "").strip()
-        lim = int(request.form.get("max_articles", "20") or 20)
+        lim = int(request.form.get("max_articles", "20") or 999)
         if not kw:
             return render_template("index.html", error="Keyword wajib diisi")
         tid = uuid.uuid4().hex[:8]
@@ -125,7 +125,7 @@ def status(task_id: str):
     data = TASKS.get(task_id)
     if not data:
         return jsonify({"error": "task not found"}), 404
-    slim_rows = data["rows"][-20:]
+    slim_rows = data["rows"][-999:]
     return jsonify({**data, "rows": slim_rows})
 
 @app.route("/download/<task_id>/<fmt>")
