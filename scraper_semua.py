@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import argparse
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from urllib.parse import quote_plus
 
 # Global headers for all requests
 HEADERS = {
@@ -52,32 +53,80 @@ def parse_detik_date(raw: str) -> str:
         return raw
 
 def scrape_detik(keyword: str, max_articles: int, session: requests.Session):
+    """
+    Scraper Detik (edisi Jateng) yang:
+    – Menerima keyword multi-kata    → urllib.parse.quote_plus
+    – Memakai endpoint /searchall    → siteid=118 (Detik Jateng)
+    – Struktur selector fleksibel    → antisipasi perubahan minor HTML
+    """
     results = []
+    kw_enc = quote_plus(keyword)                     # “bupati brebes” → “bupati+brebes”
+    base = ("https://www.detik.com/search/searchall?"
+            "query={kw}&siteid=118&source_kanal=true&page={pg}")
+
     count, page = 0, 1
     while count < max_articles:
-        url = f"https://www.detik.com/search/searchnews?query={keyword}&sortby=time&page={page}"
+        url = base.format(kw=kw_enc, pg=page)
         print(f"[Detik] GET {url}")
-        resp = session.get(url, timeout=10); resp.raise_for_status()
+
+        resp = session.get(url, timeout=10)
+        resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "lxml")
-        items = soup.find_all("article", class_="list-content__item")
-        if not items: break
+
+        # HTML Detik search terkini kadang memakai beberapa varian class
+        items = soup.select(
+            "article.list-content__item, article.media__item, article"
+        )
+        if not items:
+            break                                # habis hasil atau layout berubah drastis
+
         for art in items:
-            if count >= max_articles: break
+            if count >= max_articles:
+                break
+
             a = art.find("a", href=True)
-            link = a['href']; title = art.find("h3", class_="media__title").get_text(strip=True)
-            # detail
+            if not a:
+                continue
+            link = a["href"]
+
+            # Judul – pilih h3 → h2 → h1 bila ada
+            title_tag = art.find("h3") or art.find("h2") or art.find("h1")
+            title = title_tag.get_text(strip=True) if title_tag else link
+
+            # Tanggal di atribut d-time / title; fallback kosong
+            span_time = art.find("span", attrs={"d-time": True}) \
+                        or art.find("span", class_="date")
+            tanggal = (parse_detik_date(span_time["title"])
+                       if span_time and span_time.has_attr("title") else "")
+
+            # Detail konten
+            content = ""
             try:
-                d = session.get(link, timeout=10); d.raise_for_status()
+                d = session.get(link, timeout=10)
+                d.raise_for_status()
                 ds = BeautifulSoup(d.text, "lxml")
-                paras = ds.find_all("div", class_="detail__body-text itp_bodycontent")
-                content = " ".join(p.get_text(strip=True)
-                                       for block in paras for p in block.find_all("p"))
-            except:
-                content = ""
-            raw = art.find("span", attrs={"d-time": True})
-            tanggal = parse_detik_date(raw['title']) if raw and raw.has_attr('title') else ""
-            results.append({'site':'detik','tanggal':tanggal,'title':title,'content':content,'link':link})
-            count += 1; print(f"   ✅ [Detik {count}] {title[:50]}…")
+
+                # blok isi berita (variasi class tergantung rubrik)
+                body_blocks = ds.select(
+                    "div.detail__body-text.itp_bodycontent, "
+                    "div.detail__content, article"
+                )
+                paras = []
+                for block in body_blocks:
+                    paras.extend(p.get_text(strip=True) for p in block.find_all("p"))
+                content = " ".join(paras)
+            except Exception as e:
+                warnings.warn(f"[Detik] gagal ambil detail: {e}")
+
+            results.append({
+                "site": "detik",
+                "tanggal": tanggal,
+                "title": title,
+                "content": content,
+                "link": link,
+            })
+            count += 1
+            print(f"   ✅ [Detik {count}] {title[:50]}…")
         page += 1
     return results
 
